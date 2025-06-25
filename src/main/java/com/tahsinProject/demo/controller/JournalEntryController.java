@@ -1,41 +1,54 @@
 package com.tahsinProject.demo.controller;
 
 import com.tahsinProject.demo.entity.JournalEntry;
+import com.tahsinProject.demo.service.JournalEntryService;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/journal")
 public class JournalEntryController {
-    private final Map<Integer, JournalEntry> journalEntries = new HashMap<>();
+    @Autowired
+    private JournalEntryService journalEntryService;
+//    private final Map<Integer, JournalEntry> journalEntries = new HashMap<>();
 
     @GetMapping
     public List<JournalEntry> getAllEntries(){
-        return new ArrayList<>(journalEntries.values());
+        return journalEntryService.getEntries();
     }
 
     @PostMapping
-    public boolean createEntity(@RequestBody JournalEntry journalEntry){
-        journalEntries.put(journalEntry.getId(),journalEntry);
-        return true;
+    public JournalEntry createEntity(@RequestBody JournalEntry journalEntry){
+        journalEntry.setDate(LocalDateTime.now());
+        journalEntryService.saveEntry(journalEntry);
+        return journalEntry;
     }
 
     @GetMapping("id/{myId}")
-    public JournalEntry getJournalEntryById(@PathVariable Integer myId){
-        return journalEntries.get(myId);
+    public JournalEntry getJournalEntryById(@PathVariable ObjectId myId){
+        return journalEntryService.getEntriesById(myId).orElse(null);
     }
 
     @DeleteMapping("id/{myId}")
-    public JournalEntry deleteEntryById(@PathVariable Integer myId){
-        return journalEntries.remove(myId);
+    public String deleteEntryById(@PathVariable ObjectId myId){
+        journalEntryService.deleteById(myId);
+        return "{myId} is deleted";
     }
 
-    @PutMapping("id/{myId")
-    public JournalEntry updateEntryById(@PathVariable Integer myId, @RequestBody JournalEntry journalEntry){
-        return journalEntries.put(myId,journalEntry);
+    @PutMapping("id/{myId}")
+    public JournalEntry updateEntryById(@PathVariable ObjectId myId, @RequestBody JournalEntry newEntry){
+        JournalEntry old = journalEntryService.getEntriesById(myId).orElse(null);
+        if(old!=null){
+            old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().isEmpty() ? newEntry.getTitle() : old.getTitle());
+            old.setDescription(newEntry.getDescription()!=null && !newEntry.getDescription().isEmpty() ? newEntry.getDescription(): old.getDescription());
+        }
+        journalEntryService.saveEntry(old);
+        return old;
     }
 }
