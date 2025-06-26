@@ -7,6 +7,8 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,30 +19,24 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
-    public void saveUser(@RequestBody User user){
-        userService.saveUser(user);
-    }
-
-    @GetMapping
-    public List<User> getAllUsers(){
-        return userService.getUsers();
-    }
 
     @GetMapping("/id/{myId}")
     public User getUserById(@PathVariable ObjectId myId){
         return userService.getUsersById(myId).orElse(null);
     }
 
-    @DeleteMapping("/id/{myId}")
-    public boolean deleteUserById(@PathVariable ObjectId myId){
-        userService.deleteUserById(myId);
-        return true;
+    @DeleteMapping
+    public boolean deleteUserByName(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userService.deleteByUserName(authentication.getName());
+//        userService.deleteUserById(myId);
+//        return true;
     }
 
-    @PutMapping("/id/{myId}")
-    public ResponseEntity<?> updateUser(@RequestBody User newUser, @PathVariable ObjectId myId){
-        User userInDb = userService.getUsersById(myId).orElse(null);
+    @PutMapping
+    public ResponseEntity<?> updateUser(@RequestBody User newUser){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userInDb = userService.findByUserName(authentication.getName());
         if(userInDb!=null){
             userInDb.setUserName(newUser.getUserName());
             userInDb.setPassword(newUser.getPassword());
