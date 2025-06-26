@@ -17,41 +17,41 @@ public class JournalEntryService {
     @Autowired
     private UserService userService;
 
-    public void saveEntry(JournalEntry journalEntry, ObjectId userId){
-        User userDB = userService.getUsersById(userId).orElse(null);
+    public void saveEntry(JournalEntry journalEntry, String userName){
+        User userDB = userService.findByUserName(userName);
         journalEntryRepository.save(journalEntry);
-        assert userDB != null;
+//        assert userDB != null;
         List<JournalEntry> journalEntries = userDB.getJournalEntries();
         journalEntries.add(journalEntry);
         userService.saveUser(userDB);
     }
 
-    public List<JournalEntry> getEntries(ObjectId userId){
-        User currentUser = userService.getUsersById(userId).orElse(null);
-        assert currentUser != null;
+    public List<JournalEntry> getEntries(String userName){
+        User currentUser = userService.findByUserName(userName);
+//        assert currentUser != null;
         return currentUser.getJournalEntries();
 //        return journalEntryRepository.findAll();
     }
 
-    public JournalEntry getEntriesById(ObjectId id, ObjectId userId){
-        Optional<User> currentUser = userService.getUsersById(userId);
-        if(currentUser.isPresent()){
-            return currentUser.get().getJournalEntries().get(0);
-        }
-        return null;
+    public JournalEntry getEntriesByUserName(ObjectId id, String userName){
+        User currentUser = userService.findByUserName(userName);
+        return currentUser.getJournalEntries().stream()
+                .filter(entry -> entry.getId().equals(id))
+                .findFirst()
+                .orElse(null);
 //        return journalEntryRepository.findById(id);
     }
 
-    public void deleteById(ObjectId journalId, ObjectId userId){
-        User curentUser = userService.getUsersById(userId).orElse(null);
+    public void deleteById(ObjectId journalId, String userName){
+        User curentUser = userService.findByUserName(userName);
         List<JournalEntry> journalEntries = curentUser.getJournalEntries();
         journalEntries.removeIf(x -> x.getId().equals(journalId));
         userService.saveUser(curentUser);
         journalEntryRepository.deleteById(journalId);
     }
 
-    public void updateEntriesById(JournalEntry journalEntry, ObjectId userId, ObjectId journalId) {
-        User userDB = userService.getUsersById(userId).orElse(null);
+    public void updateEntriesById(JournalEntry journalEntry, String userName, ObjectId journalId) {
+        User userDB = userService.findByUserName(userName);
         if (userDB == null) {
             // Handle user not found, e.g., throw new UserNotFoundException("User with ID " + userId + " not found");
             return;
@@ -72,7 +72,7 @@ public class JournalEntryService {
         }
 
         if (!foundAndUpdated) {
-            System.out.println("Journal entry with ID " + journalId + " not found for user " + userId);
+            System.out.println("Journal entry with ID " + journalId + " not found for user " + userName);
         }
 
         userService.saveUser(userDB); // Save the user to persist changes to the journalEntries list (though in this case, individual entry is saved)
