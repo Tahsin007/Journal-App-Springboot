@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: demo
+
+  data:
+    mongodb:
+      uri: mongodb+srv://tahsinahmediit:jcBtcyJgJ7RmEowj@journalappcluster.ogwqi37.mongodb.net/journalDb?retryWrites=true&w=majority&appName=JournalAppCluster
+      auto-index-creation: true
+
+server:
+  port: 8081

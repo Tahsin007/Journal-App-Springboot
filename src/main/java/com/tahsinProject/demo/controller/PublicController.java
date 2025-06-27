@@ -19,8 +19,5 @@ public class PublicController {
         userService.saveUser(user);
     }
 
-    @GetMapping("/allUsers")
-    public List<User> getAllUsers(){
-        return userService.getUsers();
-    }
+
 }
