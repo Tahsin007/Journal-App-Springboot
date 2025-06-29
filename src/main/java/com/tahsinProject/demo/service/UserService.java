@@ -3,6 +3,7 @@ package com.tahsinProject.demo.service;
 import com.tahsinProject.demo.entity.JournalEntry;
 import com.tahsinProject.demo.entity.User;
 import com.tahsinProject.demo.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Slf4j
 public class UserService {
     @Autowired
     private UserRepository userRepository;
@@ -21,6 +23,7 @@ public class UserService {
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     public void saveUser(User user){
 //        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        log.info(user.getUserName());
         if (!user.getPassword().startsWith("$2a$")) { // BCrypt hashes start with $2a$
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
