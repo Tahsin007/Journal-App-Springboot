@@ -17,3 +17,24 @@ A simple journal application built with Spring Boot.
 - **Get Entry by ID:** `GET /journal/{entryId}` - Retrieve a specific journal entry.
 - **Delete Entry:** `DELETE /journal/{journalId}` - Delete a journal entry.
 - **Update Entry:** `PUT /journal/{myId}` - Update a journal entry.
+
+    * User Authentication:
+        * Secure user registration and login functionality.
+        * Utilizes JSON Web Tokens (JWT) for authentication, ensuring that only authorized users can access
+          their journal entries.
+    * Journal Entry Management:
+        * Users can create, view, update, and delete their journal entries.
+        * Each journal entry is associated with the logged-in user, ensuring data privacy.
+    * User Profile Management:
+        * Users can view and update their profile information.
+        * Users can also delete their accounts.
+    * Administrator Tools:
+        * An admin-specific endpoint to view all registered users in the application.
+    * API:
+        * A well-defined RESTful API for all application functionalities.
+
+  Technologies Used:
+    * Backend: Java, Spring Boot, Spring Security, Spring Data MongoDB
+    * Database: MongoDB
+    * Authentication: JWT (JSON Web Tokens)
+    * Build Tool: Maven
