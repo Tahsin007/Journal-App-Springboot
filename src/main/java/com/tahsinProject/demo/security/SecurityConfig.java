@@ -32,6 +32,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/public/**").permitAll()
+                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN") // Only ADMIN role can access /admin/**
                 .anyRequest().authenticated()
             )

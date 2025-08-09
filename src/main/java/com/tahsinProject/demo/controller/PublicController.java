@@ -4,6 +4,9 @@ import com.tahsinProject.demo.entity.User;
 import com.tahsinProject.demo.service.UserDetailsServiceImpl;
 import com.tahsinProject.demo.service.UserService;
 import com.tahsinProject.demo.utils.JwtUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,11 +35,20 @@ public class PublicController {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Operation(summary = "Sign up a new user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User signed up successfully")
+    })
     @PostMapping("/signUp")
     public void signUp(@RequestBody User user){
         userService.saveUser(user);
     }
 
+    @Operation(summary = "Log in an existing user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User logged in successfully, returns JWT token"),
+            @ApiResponse(responseCode = "400", description = "Incorrect username or password")
+    })
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody User user){
         try{
